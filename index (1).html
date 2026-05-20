@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Calculadora de Determinación del Riesgo | Protección Civil</title>
+  <style>
+    :root {
+      --azul: #0b2545;
+      --azul-2: #123a63;
+      --naranja: #f28c28;
+      --gris: #f4f6f8;
+      --gris-2: #e3e8ee;
+      --texto: #1f2933;
+      --bajo: #1f8f4d;
+      --alto: #b42318;
+      --blanco: #ffffff;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: linear-gradient(135deg, #f6f8fb 0%, #e9eef5 100%);
+      color: var(--texto);
+    }
+
+    .contenedor {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+
+    .encabezado {
+      background: var(--azul);
+      color: var(--blanco);
+      border-radius: 22px;
+      padding: 26px;
+      margin-bottom: 20px;
+      box-shadow: 0 12px 30px rgba(11, 37, 69, 0.18);
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 16px;
+      align-items: center;
+    }
+
+    .encabezado h1 {
+      margin: 0 0 8px;
+      font-size: clamp(24px, 3vw, 38px);
+      letter-spacing: -0.02em;
+    }
+
+    .encabezado p {
+      margin: 0;
+      color: #dce8f5;
+      line-height: 1.5;
+      max-width: 780px;
+    }
+
+    .logo {
+      width: 78px;
+      height: 78px;
+      border-radius: 50%;
+      background: var(--naranja);
+      display: grid;
+      place-items: center;
+      font-weight: 800;
+      font-size: 30px;
+      color: #fff;
+      border: 4px solid rgba(255,255,255,0.3);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 20px;
+      align-items: start;
+    }
+
+    .tarjeta {
+      background: var(--blanco);
+      border-radius: 20px;
+      padding: 20px;
+      box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+      border: 1px solid var(--gris-2);
+    }
+
+    .tarjeta h2 {
+      margin: 0 0 14px;
+      color: var(--azul);
+      font-size: 22px;
+    }
+
+    .nota {
+      background: #fff7ed;
+      border: 1px solid #fed7aa;
+      border-radius: 14px;
+      padding: 12px 14px;
+      margin-bottom: 16px;
+      font-size: 14px;
+      line-height: 1.45;
+    }
+
+    .campo {
+      display: grid;
+      grid-template-columns: 1fr 170px;
+      gap: 12px;
+      align-items: center;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--gris-2);
+    }
+
+    .campo:last-child {
+      border-bottom: 0;
+    }
+
+    label {
+      font-weight: 700;
+      line-height: 1.35;
+    }
+
+    .ayuda {
+      display: block;
+      margin-top: 4px;
+      color: #5b6776;
+      font-size: 13px;
+      font-weight: 400;
+    }
+
+    input[type="number"], select, input[type="text"] {
+      width: 100%;
+      border: 1px solid #cbd5e1;
+      border-radius: 12px;
+      padding: 11px 12px;
+      font-size: 15px;
+      outline: none;
+      background: #fff;
+    }
+
+    input[type="number"]:focus, select:focus, input[type="text"]:focus {
+      border-color: var(--naranja);
+      box-shadow: 0 0 0 3px rgba(242, 140, 40, 0.18);
+    }
+
+    .acciones {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    button {
+      border: none;
+      border-radius: 12px;
+      padding: 12px 16px;
+      font-size: 15px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: transform 0.08s ease, opacity 0.15s ease;
+    }
+
+    button:hover {
+      opacity: 0.94;
+    }
+
+    button:active {
+      transform: scale(0.98);
+    }
+
+    .primario {
+      background: var(--naranja);
+      color: #fff;
+    }
+
+    .secundario {
+      background: var(--azul);
+      color: #fff;
+    }
+
+    .ligero {
+      background: #edf2f7;
+      color: var(--azul);
+    }
+
+    .resultado {
+      text-align: center;
+      padding: 24px 18px;
+      border-radius: 18px;
+      background: var(--gris);
+      border: 1px solid var(--gris-2);
+      margin-bottom: 18px;
+    }
+
+    .puntos {
+      font-size: 58px;
+      line-height: 1;
+      font-weight: 900;
+      color: var(--azul);
+      margin-bottom: 8px;
+    }
+
+    .clasificacion {
+      display: inline-block;
+      padding: 8px 14px;
+      border-radius: 999px;
+      font-weight: 900;
+      color: #fff;
+      margin: 6px 0 12px;
+      letter-spacing: 0.04em;
+    }
+
+    .bajo {
+      background: var(--bajo);
+    }
+
+    .alto {
+      background: var(--alto);
+    }
+
+    .tramite {
+      margin: 10px auto 0;
+      font-size: 18px;
+      line-height: 1.4;
+      max-width: 420px;
+      font-weight: 700;
+    }
+
+    .tabla-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--gris-2);
+      border-radius: 16px;
+      margin-top: 16px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 840px;
+      font-size: 14px;
+    }
+
+    th, td {
+      padding: 12px 10px;
+      border-bottom: 1px solid var(--gris-2);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      background: var(--azul);
+      color: #fff;
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    tr:last-child td {
+      border-bottom: 0;
+    }
+
+    td.centro, th.centro {
+      text-align: center;
+    }
+
+    .pill {
+      display: inline-block;
+      min-width: 34px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      text-align: center;
+      font-weight: 900;
+    }
+
+    .pill-0 {
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    .pill-1 {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .datos {
+      display: grid;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .datos input {
+      background: #f8fafc;
+    }
+
+    .pie {
+      color: #5b6776;
+      font-size: 12px;
+      line-height: 1.45;
+      margin-top: 14px;
+    }
+
+    .oculto {
+      display: none;
+    }
+
+    @media (max-width: 900px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      .encabezado {
+        grid-template-columns: 1fr;
+      }
+
+      .logo {
+        width: 64px;
+        height: 64px;
+        font-size: 24px;
+      }
+    }
+
+    @media (max-width: 620px) {
+      .contenedor {
+        padding: 14px;
+      }
+
+      .campo {
+        grid-template-columns: 1fr;
+      }
+
+      .puntos {
+        font-size: 46px;
+      }
+    }
+
+    @media print {
+      body {
+        background: #fff;
+      }
+
+      .acciones, .nota, .pie.no-print, #resumenTexto {
+        display: none !important;
+      }
+
+      #detalleSumatoria {
+        display: block !important;
+      }
+
+      .contenedor {
+        max-width: none;
+        padding: 0;
+      }
+
+      .encabezado, .tarjeta {
+        box-shadow: none;
+        border: 1px solid #ddd;
+      }
+
+      .grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="contenedor">
+    <section class="encabezado">
+      <div>
+        <h1>Tabla de Determinación del Riesgo</h1>
+        <p>Esta tabla concentra los principales criterios del establecimiento para determinar, mediante una sumatoria, el nivel de riesgo aplicable y el tipo de constancia o registro que corresponde tramitar.</p>
+      </div>
+      <div class="logo" aria-label="Logo JM">JM</div>
+    </section>
+
+    <section class="grid">
+      <div class="tarjeta">
+        <h2>Captura de datos</h2>
+
+        <div class="campo">
+          <label for="altura">Altura de la edificación en metros
+            <span class="ayuda">Bajo: hasta 7 m | Alto: mayor de 7 m</span>
+          </label>
+          <input id="altura" type="number" min="0" step="0.01" placeholder="Ej. 6.5" />
+        </div>
+
+        <div class="campo">
+          <label for="superficie">Superficie del establecimiento en m²
+            <span class="ayuda">De acuerdo a la Licencia de Uso de Suelo Específico. Bajo: hasta 120 m² | Alto: mayor de 120 m²</span>
+          </label>
+          <input id="superficie" type="number" min="0" step="0.01" placeholder="Ej. 85" />
+        </div>
+
+        <div class="campo">
+          <label for="personas">Número total de personas que ocupen el inmueble
+            <span class="ayuda">Incluyendo trabajadores y visitantes. Bajo: hasta 5 | Alto: mayor de 5</span>
+          </label>
+          <input id="personas" type="number" min="0" step="1" placeholder="Ej. 4" />
+        </div>
+
+        <div class="campo">
+          <label for="liquidos">Inventario de líquidos inflamables en litros
+            <span class="ayuda">Bajo: hasta 1,400 L | Alto: mayor de 1,400 L</span>
+          </label>
+          <input id="liquidos" type="number" min="0" step="0.01" placeholder="Ej. 0" />
+        </div>
+
+        <div class="campo">
+          <label for="gases">Inventario de gases inflamables en litros, fase líquida
+            <span class="ayuda">Bajo: hasta 1,000 L | Alto: mayor de 1,000 L</span>
+          </label>
+          <input id="gases" type="number" min="0" step="0.01" placeholder="Ej. 0" />
+        </div>
+
+        <div class="campo">
+          <label for="solidos">Inventario de sólidos combustibles en kilogramos
+            <span class="ayuda">Bajo: hasta 15,000 kg | Alto: mayor de 15,000 kg</span>
+          </label>
+          <input id="solidos" type="number" min="0" step="0.01" placeholder="Ej. 300" />
+        </div>
+
+        <div class="campo">
+          <label for="especiales">Sustancias tóxicas, materiales pirofóricos, explosivos o equipos radiológicos
+            <span class="ayuda">Bajo: N/A | Alto: aplica</span>
+          </label>
+          <select id="especiales">
+            <option value="0">No aplica</option>
+            <option value="1">Sí aplica</option>
+          </select>
+        </div>
+
+        <div class="acciones">
+          <button class="primario" onclick="calcular()">Calcular riesgo</button>
+          <button class="ligero" id="btnDetalles" onclick="toggleDetalles()">Detalles</button>
+          <button class="ligero" onclick="limpiar()">Limpiar</button>
+        </div>
+      </div>
+
+      <aside class="tarjeta">
+        <h2>Resultado</h2>
+        <div class="datos">
+          <input id="nombreNegocio" type="text" placeholder="Nombre del establecimiento (opcional)" />
+          <input id="fecha" type="text" placeholder="Fecha o folio (opcional)" />
+        </div>
+
+        <div id="resultado" class="resultado">
+          <div class="puntos" id="puntos">0</div>
+          <div id="clasificacion" class="clasificacion bajo">BAJO RIESGO</div>
+          <div id="tramite" class="tramite">Constancia de Medidas Preventivas de Protección Civil.</div>
+        </div>
+
+        <div class="pie no-print">
+          Esta herramienta no sustituye la revisión técnica, documental ni normativa aplicable. Úsala como apoyo operativo para evitar errores de sumatoria y clasificación.
+        </div>
+      </aside>
+    </section>
+
+    <section id="detalleSumatoria" class="tarjeta oculto" style="margin-top: 20px;">
+      <h2>Detalle de la sumatoria</h2>
+      <div class="nota">
+        <strong>Criterio de cálculo:</strong> si el valor está dentro del rango de bajo riesgo, suma 0. Si rebasa el límite indicado o aplica el supuesto especial, suma 1.
+      </div>
+      <div class="tabla-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Concepto</th>
+              <th class="centro">Riesgo bajo</th>
+              <th class="centro">Riesgo alto</th>
+              <th class="centro">Valor capturado</th>
+              <th class="centro">Valor total</th>
+            </tr>
+          </thead>
+          <tbody id="tablaDetalle"></tbody>
+          <tfoot>
+            <tr>
+              <th colspan="4" style="text-align:right;">Resultado de la sumatoria</th>
+              <th class="centro" id="totalTabla">0</th>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </section>
+  </main>
+
+
+  <script>
+    const criterios = [
+      {
+        id: 'altura',
+        concepto: 'Altura de la edificación en metros',
+        bajo: 'Hasta 7',
+        alto: 'Mayor de 7',
+        limite: 7,
+        unidad: 'm'
+      },
+      {
+        id: 'superficie',
+        concepto: 'Superficie del establecimiento en m² de acuerdo a la Licencia de Uso de Suelo Específico',
+        bajo: 'Hasta 120',
+        alto: 'Mayor de 120',
+        limite: 120,
+        unidad: 'm²'
+      },
+      {
+        id: 'personas',
+        concepto: 'Número total de personas que ocupen el inmueble, incluyendo trabajadores y visitantes',
+        bajo: 'Hasta 5',
+        alto: 'Mayor de 5',
+        limite: 5,
+        unidad: 'personas'
+      },
+      {
+        id: 'liquidos',
+        concepto: 'Inventario de líquidos inflamables en litros',
+        bajo: 'Hasta 1,400',
+        alto: 'Mayor de 1,400',
+        limite: 1400,
+        unidad: 'L'
+      },
+      {
+        id: 'gases',
+        concepto: 'Inventario de gases inflamables en litros, fase líquida',
+        bajo: 'Hasta 1,000',
+        alto: 'Mayor de 1,000',
+        limite: 1000,
+        unidad: 'L'
+      },
+      {
+        id: 'solidos',
+        concepto: 'Inventario de sólidos combustibles en kilogramos',
+        bajo: 'Hasta 15,000',
+        alto: 'Mayor de 15,000',
+        limite: 15000,
+        unidad: 'kg'
+      }
+    ];
+
+    const idsGuardados = ['nombreNegocio', 'fecha', 'altura', 'superficie', 'personas', 'liquidos', 'gases', 'solidos', 'especiales'];
+
+    function numero(id) {
+      const valor = document.getElementById(id).value;
+      if (valor === '' || valor === null) return 0;
+      return Number(valor);
+    }
+
+    function formatoNumero(valor) {
+      return new Intl.NumberFormat('es-MX', { maximumFractionDigits: 2 }).format(valor);
+    }
+
+    function calcular() {
+      let total = 0;
+      const filas = [];
+
+      criterios.forEach(c => {
+        const valor = numero(c.id);
+        const punto = valor > c.limite ? 1 : 0;
+        total += punto;
+        filas.push({
+          concepto: c.concepto,
+          bajo: c.bajo,
+          alto: c.alto,
+          valor: `${formatoNumero(valor)} ${c.unidad}`,
+          punto
+        });
+      });
+
+      const especiales = Number(document.getElementById('especiales').value);
+      total += especiales;
+      filas.push({
+        concepto: 'Cualquier establecimiento que utilice sustancias tóxicas y/o materiales pirofóricos, explosivos y equipos radiológicos',
+        bajo: 'N/A',
+        alto: 'Aplica',
+        valor: especiales === 1 ? 'Sí aplica' : 'No aplica',
+        punto: especiales
+      });
+
+      pintarResultado(total);
+      pintarTabla(filas, total);
+      guardarLocal();
+    }
+
+    function pintarResultado(total) {
+      const puntos = document.getElementById('puntos');
+      const clasificacion = document.getElementById('clasificacion');
+      const tramite = document.getElementById('tramite');
+      const totalTabla = document.getElementById('totalTabla');
+
+      puntos.textContent = total;
+      totalTabla.textContent = total;
+
+      if (total <= 3) {
+        clasificacion.textContent = 'BAJO RIESGO';
+        clasificacion.className = 'clasificacion bajo';
+        tramite.textContent = 'Constancia de Medidas Preventivas de Protección Civil.';
+      } else {
+        clasificacion.textContent = 'ALTO RIESGO';
+        clasificacion.className = 'clasificacion alto';
+        tramite.textContent = 'Constancia de Registro del Programa Interno de Protección Civil elaborado por un PREGIR.';
+      }
+    }
+
+    function pintarTabla(filas, total) {
+      const cuerpo = document.getElementById('tablaDetalle');
+      cuerpo.innerHTML = '';
+
+      filas.forEach(f => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${f.concepto}</td>
+          <td class="centro">${f.bajo}</td>
+          <td class="centro">${f.alto}</td>
+          <td class="centro">${f.valor}</td>
+          <td class="centro"><span class="pill pill-${f.punto}">${f.punto}</span></td>
+        `;
+        cuerpo.appendChild(tr);
+      });
+
+      document.getElementById('totalTabla').textContent = total;
+    }
+
+
+    function guardarLocal() {
+      const datos = {};
+      idsGuardados.forEach(id => datos[id] = document.getElementById(id).value);
+      localStorage.setItem('calculadoraRiesgoPC', JSON.stringify(datos));
+    }
+
+    function cargarLocal() {
+      const crudo = localStorage.getItem('calculadoraRiesgoPC');
+      if (!crudo) return;
+      try {
+        const datos = JSON.parse(crudo);
+        idsGuardados.forEach(id => {
+          if (datos[id] !== undefined) document.getElementById(id).value = datos[id];
+        });
+      } catch (e) {
+        console.warn('No se pudo cargar la información local.');
+      }
+    }
+
+    function toggleDetalles() {
+      const detalle = document.getElementById('detalleSumatoria');
+      const boton = document.getElementById('btnDetalles');
+      detalle.classList.toggle('oculto');
+      boton.textContent = detalle.classList.contains('oculto') ? 'Detalles' : 'Ocultar detalles';
+    }
+
+
+    function limpiar() {
+      idsGuardados.forEach(id => {
+        const el = document.getElementById(id);
+        if (el.tagName === 'SELECT') el.value = '0';
+        else el.value = '';
+      });
+      localStorage.removeItem('calculadoraRiesgoPC');
+      calcular();
+    }
+
+    idsGuardados.forEach(id => {
+      window.addEventListener('DOMContentLoaded', () => {
+        const el = document.getElementById(id);
+        el.addEventListener('input', calcular);
+        el.addEventListener('change', calcular);
+      });
+    });
+
+    window.addEventListener('DOMContentLoaded', () => {
+      cargarLocal();
+      calcular();
+    });
+  </script>
+</body>
+</html>
